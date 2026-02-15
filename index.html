@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A premium To-Do list application with real-time features and stunning design">
+    <meta property="og:title" content="TaskFlow Pro - Your Ultimate To-Do Manager">
+    <meta property="og:description"
+        content="A stunning, feature-rich To-Do app with real-time countdowns, smart filters, and premium glassmorphism design.">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#8b5cf6">
+    <title>✨ TaskFlow Pro - Your Ultimate To-Do Manager</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">✨</span>
+                <div>
+                    <h1>TaskFlow <span class="pro">Pro</span></h1>
+                    <div class="greeting" id="greeting"></div>
+                </div>
+            </div>
+            <div class="clock-section">
+                <div class="live-clock" id="liveClock">00:00:00</div>
+                <div class="live-date" id="liveDate">Loading...</div>
+            </div>
+        </header>
+
+        <!-- Stats Dashboard -->
+        <section class="stats-dashboard">
+            <div class="stat-card">
+                <div class="stat-icon total-icon">📋</div>
+                <div class="stat-info">
+                    <span class="stat-number" id="totalTasks">0</span>
+                    <span class="stat-label">Total Tasks</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon completed-icon">✅</div>
+                <div class="stat-info">
+                    <span class="stat-number" id="completedTasks">0</span>
+                    <span class="stat-label">Completed</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon pending-icon">⏳</div>
+                <div class="stat-info">
+                    <span class="stat-number" id="pendingTasks">0</span>
+                    <span class="stat-label">Pending</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon overdue-icon">🚨</div>
+                <div class="stat-info">
+                    <span class="stat-number" id="overdueTasks">0</span>
+                    <span class="stat-label">Overdue</span>
+                </div>
+            </div>
+            <div class="stat-card progress-card">
+                <div class="progress-ring-container">
+                    <svg class="progress-ring" width="80" height="80">
+                        <circle class="progress-ring-bg" cx="40" cy="40" r="35" />
+                        <circle class="progress-ring-fill" id="progressRing" cx="40" cy="40" r="35" />
+                    </svg>
+                    <span class="progress-percent" id="progressPercent">0%</span>
+                </div>
+                <span class="stat-label">Progress</span>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <!-- Search Bar -->
+        <div class="search-section glass-card">
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" class="search-input" placeholder="Search your tasks...">
+                <button class="search-clear" id="searchClear" title="Clear search">✕</button>
+            </div>
+        </div>
+
+        <main class="main-content">
+            <!-- Add Task Section -->
+            <section class="add-task-section glass-card">
+                <h2>➕ Add New Task</h2>
+                <form id="taskForm" class="task-form">
+                    <div class="form-row">
+                        <div class="input-group full-width">
+                            <label for="taskTitle">Task Title</label>
+                            <input type="text" id="taskTitle" placeholder="What needs to be done?" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="taskCategory">Category</label>
+                            <select id="taskCategory">
+                                <option value="work">💼 Work</option>
+                                <option value="personal">🏠 Personal</option>
+                                <option value="health">❤️ Health</option>
+                                <option value="learning">📚 Learning</option>
+                                <option value="shopping">🛒 Shopping</option>
+                                <option value="finance">💰 Finance</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="taskPriority">Priority</label>
+                            <select id="taskPriority">
+                                <option value="low">🟢 Low</option>
+                                <option value="medium">🟡 Medium</option>
+                                <option value="high">🟠 High</option>
+                                <option value="critical">🔴 Critical</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="taskDate">Due Date</label>
+                            <input type="date" id="taskDate">
+                        </div>
+                        <div class="input-group">
+                            <label for="taskTime">Due Time</label>
+                            <input type="time" id="taskTime">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="input-group full-width">
+                            <label for="taskNotes">Notes (optional)</label>
+                            <textarea id="taskNotes" placeholder="Add any additional details..."></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-add">
+                        <span class="btn-icon">🚀</span>
+                        Add Task
+                    </button>
+                </form>
+            </section>
+
+            <!-- Task List Section -->
+            <section class="task-list-section glass-card">
+                <div class="task-list-header">
+                    <div class="task-list-title-row">
+                        <h2>📝 Your Tasks</h2>
+                        <button class="btn-clear-completed" id="clearCompleted" title="Remove all completed tasks">
+                            🧹 Clear Completed
+                        </button>
+                    </div>
+                    <div class="filter-controls">
+                        <select id="filterCategory" class="filter-select">
+                            <option value="all">All Categories</option>
+                            <option value="work">💼 Work</option>
+                            <option value="personal">🏠 Personal</option>
+                            <option value="health">❤️ Health</option>
+                            <option value="learning">📚 Learning</option>
+                            <option value="shopping">🛒 Shopping</option>
+                            <option value="finance">💰 Finance</option>
+                        </select>
+                        <select id="filterStatus" class="filter-select">
+                            <option value="all">All Status</option>
+                            <option value="pending">⏳ Pending</option>
+                            <option value="completed">✅ Completed</option>
+                            <option value="overdue">🚨 Overdue</option>
+                        </select>
+                        <select id="sortBy" class="filter-select">
+                            <option value="dueDate">Sort by Due Date</option>
+                            <option value="priority">Sort by Priority</option>
+                            <option value="created">Sort by Created</option>
+                            <option value="title">Sort by Title</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Quick Filter Tabs -->
+                <div class="quick-filters">
+                    <button class="quick-filter active" data-filter="all">All</button>
+                    <button class="quick-filter" data-filter="today">Today</button>
+                    <button class="quick-filter" data-filter="upcoming">Upcoming 7 Days</button>
+                    <button class="quick-filter" data-filter="overdue">Overdue</button>
+                </div>
+
+                <!-- Task List -->
+                <div class="task-list" id="taskList">
+                    <!-- Tasks will be rendered here -->
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-icon">📭</div>
+                    <h3>No tasks yet!</h3>
+                    <p>Add your first task to get started on your productivity journey.</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Made with 💜 | TaskFlow Pro &copy; <span id="currentYear"></span></p>
+        </footer>
+    </div>
+
+    <!-- Edit Task Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal glass-card">
+            <div class="modal-header">
+                <h3>✏️ Edit Task</h3>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <form id="editForm" class="task-form">
+                <input type="hidden" id="editTaskId">
+                <div class="form-row">
+                    <div class="input-group full-width">
+                        <label for="editTaskTitle">Task Title</label>
+                        <input type="text" id="editTaskTitle" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="editTaskCategory">Category</label>
+                        <select id="editTaskCategory">
+                            <option value="work">💼 Work</option>
+                            <option value="personal">🏠 Personal</option>
+                            <option value="health">❤️ Health</option>
+                            <option value="learning">📚 Learning</option>
+                            <option value="shopping">🛒 Shopping</option>
+                            <option value="finance">💰 Finance</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="editTaskPriority">Priority</label>
+                        <select id="editTaskPriority">
+                            <option value="low">🟢 Low</option>
+                            <option value="medium">🟡 Medium</option>
+                            <option value="high">🟠 High</option>
+                            <option value="critical">🔴 Critical</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="editTaskDate">Due Date</label>
+                        <input type="date" id="editTaskDate">
+                    </div>
+                    <div class="input-group">
+                        <label for="editTaskTime">Due Time</label>
+                        <input type="time" id="editTaskTime">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="input-group full-width">
+                        <label for="editTaskNotes">Notes</label>
+                        <textarea id="editTaskNotes"></textarea>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" id="cancelEdit">Cancel</button>
+                    <button type="submit" class="btn-save">💾 Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confetti Canvas for celebrations -->
+    <canvas id="confetti"></canvas>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
