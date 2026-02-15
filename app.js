@@ -790,3 +790,125 @@ window.clearCompletedTasks = clearCompletedTasks;
 // ============================
 
 document.addEventListener('DOMContentLoaded', init);
+
+// ============================
+// SERVICE WORKER & PWA
+// ============================
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then((reg) => {
+                console.log('✅ Service Worker registered:', reg.scope);
+            })
+            .catch((err) => {
+                console.log('Service Worker registration failed:', err);
+            });
+    });
+}
+
+// ============================
+// NOTIFICATIONS
+// ============================
+
+let notificationPermission = 'default';
+const notifiedTasks = new Set(); // Track which tasks we've already notified about
+
+function requestNotificationPermission() {
+    if (!('Notification' in window)) {
+        console.log('Notifications not supported');
+        return;
+    }
+
+    if (Notification.permission === 'granted') {
+        notificationPermission = 'granted';
+        startNotificationChecker();
+        showToast('🔔 Notifications enabled!', 'success');
+    } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then((permission) => {
+            notificationPermission = permission;
+            if (permission === 'granted') {
+                startNotificationChecker();
+                showToast('🔔 Notifications enabled! You\'ll get reminders for upcoming tasks.', 'success');
+            }
+        });
+    }
+}
+
+function startNotificationChecker() {
+    // Check every 60 seconds for tasks that need notifications
+    checkTaskNotifications();
+    setInterval(checkTaskNotifications, 60000);
+}
+
+function checkTaskNotifications() {
+    if (notificationPermission !== 'granted') return;
+
+    const now = new Date();
+
+    tasks.forEach((task) => {
+        if (task.completed || !task.dueDate) return;
+        if (notifiedTasks.has(task.id)) return;
+
+        let dueDateTime = new Date(task.dueDate);
+        if (task.dueTime) {
+            const [hours, minutes] = task.dueTime.split(':');
+            dueDateTime.setHours(parseInt(hours), parseInt(minutes), 0);
+        } else {
+            dueDateTime.setHours(23, 59, 59);
+        }
+
+        const timeDiff = dueDateTime - now;
+        const minutesLeft = timeDiff / (1000 * 60);
+
+        // Notify if task is due within 30 minutes
+        if (minutesLeft > 0 && minutesLeft <= 30) {
+            sendNotification(
+                `⏰ Task Due Soon!`,
+                `"${task.title}" is due in ${Math.round(minutesLeft)} minutes!`,
+                task.id
+            );
+        }
+
+        // Notify if task just became overdue (within last 5 minutes)
+        if (minutesLeft < 0 && minutesLeft >= -5) {
+            sendNotification(
+                `🚨 Task Overdue!`,
+                `"${task.title}" is now overdue!`,
+                task.id
+            );
+        }
+    });
+}
+
+function sendNotification(title, body, taskId) {
+    if (notifiedTasks.has(taskId)) return;
+    notifiedTasks.add(taskId);
+
+    // Clear from notified set after 1 hour so it can re-notify if still relevant
+    setTimeout(() => notifiedTasks.delete(taskId), 3600000);
+
+    const options = {
+        body: body,
+        icon: '/icons/icon-192.png',
+        badge: '/icons/icon-192.png',
+        vibrate: [200, 100, 200],
+        tag: `task-${taskId}`,
+        requireInteraction: true,
+        actions: [
+            { action: 'open', title: '📋 Open App' },
+            { action: 'dismiss', title: '✕ Dismiss' }
+        ]
+    };
+
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.ready.then((reg) => {
+            reg.showNotification(title, options);
+        });
+    } else {
+        new Notification(title, options);
+    }
+}
+
+// Ask for notification permission shortly after page load
+setTimeout(requestNotificationPermission, 2000);
